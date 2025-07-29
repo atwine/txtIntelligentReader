@@ -118,6 +118,19 @@ class QuickFilter:
             r'^\W+$',  # Only punctuation/symbols
             r'^\d+\s*-\s*\d+$',  # Page ranges like "1-5"
             r'^Chapter\s+\d+$',  # Chapter headings
+            # Enhanced patterns for medical documents
+            r'^\s*\d+\.\d+.*$',  # Section numbers like "3.1 Title"
+            r'^\s*[A-Z]\.\d+.*$',  # Section numbers like "A.4 Title"
+            r'^\s*\d+\.\d+\.\d+.*$',  # Subsection numbers like "1.2.3 Title"
+            r'^\s*\d+\.\d+\s+[A-Z]',  # Section numbers followed by titles
+            r'\bFor further reading,?\s+refer to\s+[\d,\s-]+',  # Reference citations
+            r'\brefer to\s+[\d,\s-]+',  # Simple references
+            r'^[\d,\s-]+\s+SECTION\s+\d+',  # Page numbers before sections
+            r'SECTION\s+\d+:\s+[A-Z\s]+$',  # Section headers
+            r'^\s*\d+\.\d+\s+\w+',  # Numbered subsections
+            r'^\s*[A-Z]\.\d+\.\d+',  # Multi-level section numbers
+            r'\b\d{3,}\s+SECTION\b',  # Page numbers before SECTION
+            r'^\s*\d+\s+[A-Z][a-z]+\s+[A-Z][a-z]+',  # Page numbers with title words
             r'^Section\s+\d+',  # Section headings
             r'^Part\s+[IVX]+',  # Part headings with roman numerals
         ]
@@ -207,7 +220,7 @@ class QuickFilter:
             r'^\s*☑\s*$',  # Checked boxes
             r'^\s*✓\s*$',  # Check marks
             r'^\s*✗\s*$',  # X marks
-        ]
+        ]    
         
         return [re.compile(pattern, re.IGNORECASE) for pattern in patterns]
     

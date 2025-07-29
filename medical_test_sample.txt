@@ -1,0 +1,86 @@
+UGANDA 3RD IDSR TECHNICAL GUIDELINES
+
+INTEGRATED DISEASE SURVEILLANCE AND RESPONSE
+
+1.0 INTRODUCTION
+
+The Integrated Disease Surveillance and Response (IDSR) is a strategy that promotes the rational use of resources by integrating common surveillance functions of multiple diseases and health conditions.
+
+1.1 Background
+
+Uganda adopted the IDSR strategy in 2000 as recommended by the World Health Organization (WHO) for the African Region.
+
+The strategy focuses on improving surveillance and response activities at all levels of the health system.
+
+2.0 OBJECTIVES
+
+The main objective of IDSR is to strengthen disease surveillance and response systems.
+
+Specific objectives include:
+- To detect disease outbreaks early
+- To confirm suspected cases through laboratory diagnosis
+- To respond promptly to disease outbreaks
+- To monitor disease trends over time
+
+2.1 Priority Diseases
+
+The following diseases are considered priority for surveillance:
+- Cholera
+- Dysentery
+- Typhoid fever
+- Meningitis
+- Yellow fever
+- Viral hemorrhagic fevers
+- Malaria
+- Tuberculosis
+- HIV/AIDS
+
+3.0 SURVEILLANCE ACTIVITIES
+
+Surveillance activities include case detection, reporting, investigation, and response.
+
+3.1 Case Detection
+
+Health workers should be trained to recognize signs and symptoms of priority diseases.
+
+Community health workers play a crucial role in early detection of cases.
+
+3.2 Laboratory Confirmation
+
+Laboratory confirmation is essential for accurate diagnosis.
+
+Specimens should be collected according to standard procedures.
+
+Results should be communicated promptly to relevant authorities.
+
+4.0 RESPONSE MEASURES
+
+Response measures depend on the type of disease and severity of the outbreak.
+
+Immediate response includes case management and infection control measures.
+
+Public health measures may include vaccination campaigns and health education.
+
+4.1 Case Management
+
+Patients should receive appropriate treatment according to national guidelines.
+
+Severe cases may require hospitalization and specialized care.
+
+Contact tracing should be conducted for communicable diseases.
+
+5.0 REPORTING SYSTEM
+
+The reporting system follows a hierarchical structure from health facilities to national level.
+
+Weekly reports should be submitted even when no cases are detected.
+
+Electronic reporting systems are being implemented to improve timeliness.
+
+6.0 TRAINING AND CAPACITY BUILDING
+
+Regular training is essential for effective implementation of IDSR.
+
+Training should target health workers at all levels of the health system.
+
+Supervisory visits help ensure quality of surveillance activities.

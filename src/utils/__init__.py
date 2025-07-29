@@ -33,6 +33,12 @@ from .config_loader import (
     create_sample_config
 )
 
+# LLM client utilities
+from .llm_client import (
+    LLMClientManager,
+    create_llm_client
+)
+
 __all__ = [
     # Logger
     'setup_logging',
@@ -52,5 +58,9 @@ __all__ = [
     'load_config',
     'get_default_config',
     'validate_config',
-    'create_sample_config'
+    'create_sample_config',
+    
+    # LLM client
+    'LLMClientManager',
+    'create_llm_client'
 ]

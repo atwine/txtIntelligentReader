@@ -18,7 +18,7 @@ import json
 sys.path.append(str(Path(__file__).parent))
 
 from pipeline import TextProcessor
-from utils import setup_logging, ErrorHandler, OutputFormatter, ConfigLoader, load_config
+from utils import setup_logging, ErrorHandler, OutputFormatter, ConfigLoader, load_config, create_llm_client
 
 
 class TxtIntelligentReader:
@@ -196,8 +196,23 @@ def main():
             
         config['use_spacy'] = args.use_spacy
         
+        # Initialize LLM client if requested
+        llm_client = None
+        if args.llm_client or 'ai' in args.layers:
+            if args.verbose:
+                print("🤖 Initializing LLM client...")
+            
+            llm_client = create_llm_client(client_config=args.llm_client, config=config)
+            
+            if llm_client:
+                if args.verbose:
+                    print("✅ LLM client initialized successfully")
+            else:
+                if args.verbose:
+                    print("⚠️  LLM client initialization failed, using rule-based analysis")
+        
         # Initialize the reader
-        reader = TxtIntelligentReader(config)
+        reader = TxtIntelligentReader(config, llm_client=llm_client)
         
         if args.verbose:
             print("🚀 txtIntelligentReader - Multi-agent Text Processing System")
@@ -215,14 +230,17 @@ def main():
                 if args.verbose:
                     print(f"\n📄 Processing file {i}/{len(args.input_files)}: {input_file}")
                 
-                # Determine output file
+                # Determine output file - ensure it goes to output/ directory
+                output_dir = Path("output")
+                output_dir.mkdir(exist_ok=True)
+                
                 if args.output:
                     if os.path.isdir(args.output):
                         output_file = os.path.join(args.output, f"processed_{os.path.basename(input_file)}")
                     else:
-                        output_file = f"{args.output}_{i}.txt"
+                        output_file = output_dir / f"{Path(args.output).stem}_{i}.txt"
                 else:
-                    output_file = f"processed_{os.path.basename(input_file)}"
+                    output_file = output_dir / f"processed_{os.path.basename(input_file)}"
                 
                 result = reader.process_file(
                     input_file=input_file,
@@ -236,7 +254,18 @@ def main():
         else:
             # Single file processing
             input_file = args.input_files[0]
-            output_file = args.output
+            
+            # Ensure output goes to output/ directory
+            output_dir = Path("output")
+            output_dir.mkdir(exist_ok=True)
+            
+            if args.output:
+                if os.path.isdir(args.output):
+                    output_file = args.output
+                else:
+                    output_file = output_dir / Path(args.output).name
+            else:
+                output_file = output_dir / f"processed_{os.path.basename(input_file)}"
             
             result = reader.process_file(
                 input_file=input_file,

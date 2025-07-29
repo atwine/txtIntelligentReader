@@ -48,19 +48,12 @@ class OutputFormatter(LoggerMixin):
             output_path = Path(output_path)
             
             with open(output_path, 'w', encoding='utf-8') as f:
-                # Add metadata header if provided
-                if metadata:
-                    f.write(f"# txtIntelligentReader Output\n")
-                    f.write(f"# Generated: {datetime.now().isoformat()}\n")
-                    f.write(f"# Input file: {metadata.get('input_file', 'Unknown')}\n")
-                    f.write(f"# Processing time: {metadata.get('processing_time', 0):.3f}s\n")
-                    f.write(f"# Sentences: {len(sentences)}\n")
-                    f.write(f"# Layers applied: {', '.join(metadata.get('layers_applied', []))}\n")
-                    f.write(f"#\n\n")
-                
-                # Write sentences
+                # Write sentences in lowercase without metadata headers
                 for sentence in sentences:
-                    f.write(sentence.strip() + '\n')
+                    # Convert to lowercase and clean up
+                    cleaned_sentence = sentence.strip().lower()
+                    if cleaned_sentence:  # Only write non-empty sentences
+                        f.write(cleaned_sentence + '\n')
             
             self.log_info(f"Text output saved to: {output_path}")
             return True
