@@ -5,14 +5,17 @@ Contains helper functions and utilities for text processing,
 file operations, and output formatting.
 """
 
-from .text_processor import TextProcessor
 from .file_handler import FileHandler
+from .logger import setup_logging
 from .output_formatter import OutputFormatter
-from .logger import Logger
+from .error_handler import ErrorHandler, handle_error, safe_execute, ErrorContext
 
 __all__ = [
-    'TextProcessor',
-    'FileHandler', 
+    'FileHandler',
+    'setup_logging',
     'OutputFormatter',
-    'Logger'
+    'ErrorHandler',
+    'handle_error',
+    'safe_execute',
+    'ErrorContext'
 ]

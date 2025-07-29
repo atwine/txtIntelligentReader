@@ -1,89 +1,71 @@
+#!/usr/bin/env python3
 """
 Quick Filter (Layer 1) for txtIntelligentReader
 
-Removes obvious noise and formatting artifacts like page numbers, 
-roman numerals, headers, and table of contents entries.
+This filter removes obvious noise and formatting artifacts from text.
 """
 
 import re
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 
 
 class QuickFilter:
     """
-    Layer 1 filter for removing obvious noise and formatting artifacts.
+    First layer filter that removes obvious noise and formatting artifacts.
     
-    This filter quickly removes:
-    - Standalone numbers and page references
-    - Roman numerals
+    This filter handles:
+    - PDF extraction artifacts
+    - Headers, footers, and page numbers
     - Table of contents entries
-    - Headers and formatting lines
-    - Dot and dash lines
+    - Standalone numbers and formatting
+    - Obvious non-content text
     """
     
     def __init__(self):
-        """Initialize the Quick Filter with noise patterns."""
-        self.noise_patterns = [
-            r'^\d+$',  # Standalone numbers
-            r'^[ivxlcdm]+$',  # Roman numerals (lowercase)
-            r'^[IVXLCDM]+$',  # Roman numerals (uppercase)
-            r'^Page \d+',  # Page numbers
-            r'^page \d+',  # Page numbers (lowercase)
-            r'^\.{3,}',  # Dot lines (3 or more dots)
-            r'^-{3,}',  # Dash lines (3 or more dashes)
-            r'^_{3,}',  # Underscore lines
-            r'^={3,}',  # Equal sign lines
-            r'^LIST OF',  # Table of contents
-            r'^list of',  # Table of contents (lowercase)
-            r'^TABLE OF',  # Table of contents
-            r'^table of',  # Table of contents (lowercase)
-            r'^CONTENTS',  # Contents header
-            r'^contents',  # Contents header (lowercase)
-            r'^FOREWORD',  # Foreword header
-            r'^foreword',  # Foreword header (lowercase)
-            r'^PREFACE',  # Preface header
-            r'^preface',  # Preface header (lowercase)
-            r'^APPENDIX',  # Appendix markers
-            r'^appendix',  # Appendix markers (lowercase)
-            r'^BIBLIOGRAPHY',  # Bibliography header
-            r'^bibliography',  # Bibliography header (lowercase)
-            r'^REFERENCES',  # References header
-            r'^references',  # References header (lowercase)
-            r'^INDEX',  # Index header
-            r'^index',  # Index header (lowercase)
-            r'^\s*\d+\.\d+\s*$',  # Section numbers (e.g., "1.1", "2.3")
-            r'^\s*Chapter \d+\s*$',  # Chapter headers
-            r'^\s*chapter \d+\s*$',  # Chapter headers (lowercase)
-            r'^\s*Section \d+\s*$',  # Section headers
-            r'^\s*section \d+\s*$',  # Section headers (lowercase)
-            r'^\s*\([a-z]\)\s*$',  # Single letter in parentheses
-            r'^\s*\([0-9]+\)\s*$',  # Single number in parentheses
-            r'^\s*[a-z]\.\s*$',  # Single letter with period
-            r'^\s*[A-Z]\.\s*$',  # Single uppercase letter with period
-        ]
+        """Initialize the QuickFilter with noise patterns."""
+        self.noise_patterns = self._compile_noise_patterns()
+        self.pdf_artifact_patterns = self._compile_pdf_artifact_patterns()
+        self.header_footer_patterns = self._compile_header_footer_patterns()
+        self.formatting_patterns = self._compile_formatting_patterns()
         
-        # Compile patterns for efficiency
-        self.compiled_patterns = [re.compile(pattern, re.IGNORECASE) for pattern in self.noise_patterns]
+        # Statistics tracking
+        self.stats = {
+            'total_processed': 0,
+            'noise_removed': 0,
+            'pdf_artifacts_removed': 0,
+            'headers_footers_removed': 0,
+            'formatting_removed': 0
+        }
     
     def filter_text(self, sentences: List[str]) -> List[str]:
         """
-        Filter out noise sentences from the input list.
+        Filter out noise from a list of sentences.
         
         Args:
             sentences: List of sentences to filter
             
         Returns:
-            List of sentences with noise removed
+            Filtered list of sentences with noise removed
         """
+        if not sentences:
+            return []
+        
         filtered = []
+        self.stats['total_processed'] = len(sentences)
+        
         for sentence in sentences:
-            if not self._is_noise(sentence.strip()):
-                filtered.append(sentence)
+            if sentence and isinstance(sentence, str):
+                cleaned_sentence = sentence.strip()
+                if cleaned_sentence and not self._is_noise(cleaned_sentence):
+                    filtered.append(cleaned_sentence)
+                else:
+                    self.stats['noise_removed'] += 1
+        
         return filtered
     
     def _is_noise(self, sentence: str) -> bool:
         """
-        Check if a sentence matches noise patterns.
+        Check if a sentence is noise that should be filtered out.
         
         Args:
             sentence: Sentence to check
@@ -91,106 +73,255 @@ class QuickFilter:
         Returns:
             True if sentence is noise, False otherwise
         """
-        # Skip empty or very short sentences
+        # Check minimum length
         if len(sentence.strip()) < 3:
             return True
         
-        # Check against compiled patterns
-        for pattern in self.compiled_patterns:
+        # Check for PDF artifacts
+        if self._is_pdf_artifact(sentence):
+            self.stats['pdf_artifacts_removed'] += 1
+            return True
+        
+        # Check for headers/footers
+        if self._is_header_footer(sentence):
+            self.stats['headers_footers_removed'] += 1
+            return True
+        
+        # Check for formatting artifacts
+        if self._is_formatting_artifact(sentence):
+            self.stats['formatting_removed'] += 1
+            return True
+        
+        # Check against general noise patterns
+        for pattern in self.noise_patterns:
             if pattern.match(sentence.strip()):
                 return True
         
-        # Additional heuristic checks
-        if self._is_mostly_punctuation(sentence):
-            return True
-        
-        if self._is_page_header_footer(sentence):
-            return True
-            
         return False
     
-    def _is_mostly_punctuation(self, sentence: str) -> bool:
+    def _compile_noise_patterns(self) -> List[re.Pattern]:
         """
-        Check if sentence is mostly punctuation marks.
+        Compile regex patterns for general noise detection.
         
-        Args:
-            sentence: Sentence to check
-            
         Returns:
-            True if mostly punctuation, False otherwise
+            List of compiled regex patterns
         """
-        if len(sentence.strip()) == 0:
-            return True
-        
-        # Count alphanumeric characters
-        alphanumeric_count = sum(1 for char in sentence if char.isalnum())
-        total_non_space = len(sentence.replace(' ', ''))
-        
-        if total_non_space == 0:
-            return True
-        
-        # If less than 30% alphanumeric, consider it mostly punctuation
-        return (alphanumeric_count / total_non_space) < 0.3
-    
-    def _is_page_header_footer(self, sentence: str) -> bool:
-        """
-        Check if sentence looks like a page header or footer.
-        
-        Args:
-            sentence: Sentence to check
-            
-        Returns:
-            True if looks like header/footer, False otherwise
-        """
-        sentence_lower = sentence.lower().strip()
-        
-        # Common header/footer patterns
-        header_footer_indicators = [
-            'page',
-            'chapter',
-            'section',
-            'figure',
-            'table',
-            'appendix',
-            'copyright',
-            '©',
-            'all rights reserved',
-            'confidential',
-            'draft',
-            'version',
-            'revision',
-            'date:',
-            'author:',
-            'title:',
+        patterns = [
+            r'^\d+$',  # Standalone numbers
+            r'^[ivxlcdm]+$',  # Roman numerals only
+            r'^[ivxlcdm]+\.$',  # Roman numerals with period
+            r'^\d+\.$',  # Numbers with period
+            r'^\d+\)$',  # Numbers with parenthesis
+            r'^[a-z]\)$',  # Single letter with parenthesis
+            r'^[A-Z]\.$',  # Single capital letter with period
+            r'^\s*$',  # Empty or whitespace only
+            r'^\W+$',  # Only punctuation/symbols
+            r'^\d+\s*-\s*\d+$',  # Page ranges like "1-5"
+            r'^Chapter\s+\d+$',  # Chapter headings
+            r'^Section\s+\d+',  # Section headings
+            r'^Part\s+[IVX]+',  # Part headings with roman numerals
         ]
         
-        for indicator in header_footer_indicators:
-            if indicator in sentence_lower:
-                # If it's short and contains these indicators, likely header/footer
-                if len(sentence.strip()) < 50:
-                    return True
+        return [re.compile(pattern, re.IGNORECASE) for pattern in patterns]
+    
+    def _compile_pdf_artifact_patterns(self) -> List[re.Pattern]:
+        """
+        Compile regex patterns for PDF extraction artifacts.
+        
+        Returns:
+            List of compiled regex patterns for PDF artifacts
+        """
+        patterns = [
+            r'^Page\s+\d+',  # Page numbers
+            r'^\d+\s+of\s+\d+',  # "1 of 10" style
+            r'^\d+/\d+$',  # "1/10" style
+            r'^\[\d+\]$',  # Bracketed numbers
+            r'^\(\d+\)$',  # Parenthetical numbers
+            r'^\d+\s*$',  # Standalone page numbers
+            r'^\.{3,}',  # Multiple dots (table of contents)
+            r'^-{3,}',  # Multiple dashes
+            r'^_{3,}',  # Multiple underscores
+            r'^={3,}',  # Multiple equals signs
+            r'^\*{3,}',  # Multiple asterisks
+            r'^#+',  # Multiple hash symbols
+            r'^\s*\|.*\|\s*$',  # Table borders
+            r'^\+[-+\s]+\+$',  # ASCII table borders
+        ]
+        
+        return [re.compile(pattern, re.IGNORECASE) for pattern in patterns]
+    
+    def _compile_header_footer_patterns(self) -> List[re.Pattern]:
+        """
+        Compile regex patterns for headers and footers.
+        
+        Returns:
+            List of compiled regex patterns for headers/footers
+        """
+        patterns = [
+            r'^LIST OF',  # Table of contents
+            r'^TABLE OF CONTENTS',
+            r'^CONTENTS$',
+            r'^INDEX$',
+            r'^REFERENCES$',
+            r'^BIBLIOGRAPHY$',
+            r'^APPENDIX',
+            r'^FOREWORD$',
+            r'^PREFACE$',
+            r'^INTRODUCTION$',
+            r'^ABSTRACT$',
+            r'^SUMMARY$',
+            r'^ACKNOWLEDGMENT',
+            r'^COPYRIGHT',
+            r'^\(C\)\s*\d{4}',  # Copyright notices
+            r'^©\s*\d{4}',  # Copyright symbol
+            r'^All rights reserved',
+            r'^Printed in',
+            r'^Published by',
+            r'^ISBN',
+            r'^DOI:',
+            r'^www\.',  # Web addresses
+            r'^https?://',  # URLs
+            r'^[A-Z\s]{10,}$',  # Long uppercase strings (likely headers)
+        ]
+        
+        return [re.compile(pattern, re.IGNORECASE) for pattern in patterns]
+    
+    def _compile_formatting_patterns(self) -> List[re.Pattern]:
+        """
+        Compile regex patterns for formatting artifacts.
+        
+        Returns:
+            List of compiled regex patterns for formatting
+        """
+        patterns = [
+            r'^\s*[\*\-\+]\s*$',  # Bullet points alone
+            r'^\s*[\*\-\+]\s+$',  # Bullet points with space
+            r'^\s*•\s*$',  # Unicode bullet points
+            r'^\s*→\s*$',  # Arrow symbols
+            r'^\s*►\s*$',  # Triangle symbols
+            r'^\s*\d+\.\s*$',  # Numbered list markers alone
+            r'^\s*[a-z]\)\s*$',  # Letter list markers
+            r'^\s*\([a-z]\)\s*$',  # Parenthetical letter markers
+            r'^\s*\[[\*\-\+x]\]\s*$',  # Checkbox markers
+            r'^\s*☐\s*$',  # Unicode checkboxes
+            r'^\s*☑\s*$',  # Checked boxes
+            r'^\s*✓\s*$',  # Check marks
+            r'^\s*✗\s*$',  # X marks
+        ]
+        
+        return [re.compile(pattern, re.IGNORECASE) for pattern in patterns]
+    
+    def _is_pdf_artifact(self, sentence: str) -> bool:
+        """
+        Check if sentence is a PDF extraction artifact.
+        
+        Args:
+            sentence: Sentence to check
+            
+        Returns:
+            True if sentence is a PDF artifact
+        """
+        for pattern in self.pdf_artifact_patterns:
+            if pattern.match(sentence.strip()):
+                return True
+        
+        # Additional PDF artifact checks
+        stripped = sentence.strip()
+        
+        # Check for OCR errors (random single characters)
+        if len(stripped) == 1 and not stripped.isalnum():
+            return True
+        
+        # Check for broken words (common in PDF extraction)
+        if len(stripped.split()) == 1 and len(stripped) < 3:
+            return True
+        
+        # Check for excessive spacing artifacts
+        if '  ' in sentence and len(sentence.replace(' ', '')) < 5:
+            return True
         
         return False
     
-    def get_filter_stats(self, original_sentences: List[str], filtered_sentences: List[str]) -> Dict[str, Any]:
+    def _is_header_footer(self, sentence: str) -> bool:
+        """
+        Check if sentence is a header or footer.
+        
+        Args:
+            sentence: Sentence to check
+            
+        Returns:
+            True if sentence is a header/footer
+        """
+        for pattern in self.header_footer_patterns:
+            if pattern.match(sentence.strip()):
+                return True
+        
+        # Additional header/footer checks
+        stripped = sentence.strip()
+        
+        # Check for date patterns (common in headers/footers)
+        date_patterns = [
+            r'\d{1,2}/\d{1,2}/\d{2,4}',
+            r'\d{1,2}-\d{1,2}-\d{2,4}',
+            r'\w+\s+\d{1,2},?\s+\d{4}',
+            r'\d{4}-\d{2}-\d{2}'
+        ]
+        
+        for pattern in date_patterns:
+            if re.search(pattern, stripped):
+                return True
+        
+        return False
+    
+    def _is_formatting_artifact(self, sentence: str) -> bool:
+        """
+        Check if sentence is a formatting artifact.
+        
+        Args:
+            sentence: Sentence to check
+            
+        Returns:
+            True if sentence is a formatting artifact
+        """
+        for pattern in self.formatting_patterns:
+            if pattern.match(sentence.strip()):
+                return True
+        
+        return False
+    
+    def get_filtering_stats(self) -> Dict[str, Any]:
         """
         Get statistics about the filtering process.
         
-        Args:
-            original_sentences: Original list of sentences
-            filtered_sentences: Filtered list of sentences
-            
         Returns:
-            Dictionary with filtering statistics
+            Dictionary containing filtering statistics
         """
-        original_count = len(original_sentences)
-        filtered_count = len(filtered_sentences)
-        removed_count = original_count - filtered_count
+        total_removed = (
+            self.stats['noise_removed'] + 
+            self.stats['pdf_artifacts_removed'] + 
+            self.stats['headers_footers_removed'] + 
+            self.stats['formatting_removed']
+        )
         
         return {
-            'original_count': original_count,
-            'filtered_count': filtered_count,
-            'removed_count': removed_count,
-            'removal_rate': removed_count / original_count if original_count > 0 else 0,
-            'filter_name': 'QuickFilter (Layer 1)'
+            'total_processed': self.stats['total_processed'],
+            'total_removed': total_removed,
+            'total_kept': self.stats['total_processed'] - total_removed,
+            'removal_rate': total_removed / self.stats['total_processed'] if self.stats['total_processed'] > 0 else 0,
+            'breakdown': {
+                'noise_removed': self.stats['noise_removed'],
+                'pdf_artifacts_removed': self.stats['pdf_artifacts_removed'],
+                'headers_footers_removed': self.stats['headers_footers_removed'],
+                'formatting_removed': self.stats['formatting_removed']
+            }
+        }
+    
+    def reset_stats(self):
+        """Reset filtering statistics."""
+        self.stats = {
+            'total_processed': 0,
+            'noise_removed': 0,
+            'pdf_artifacts_removed': 0,
+            'headers_footers_removed': 0,
+            'formatting_removed': 0
         }
