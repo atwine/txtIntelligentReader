@@ -246,36 +246,6 @@ A CrewAI-powered multi-agent text processing system that extracts high-quality, 
 1. **ContentClassifierAgent**: Document analysis and classification
 2. **HealthDomainExpertAgent**: Medical terminology expertise
 3. **GrammarEnhancementAgent**: Text quality improvement
-4. **QualityValidationAgent**: Final validation
-5. **WorkflowCoordinatorAgent**: Multi-agent orchestration
-
-### Filtering Layers
-1. **Quick Filter**: Remove noise and formatting artifacts
-2. **Health Context Detection**: Identify medical/health relevance
-3. **AI Analysis**: LLM-powered completeness validation
-4. **Complete Thought Validation**: Ensure proper sentence structure
-
-## Installation
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd txtIntelligentReader
-```
-
-2. Create virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-4. Install and setup Ollama:
-```bash
 # Install Ollama (see https://ollama.ai)
 ollama pull llama3.1:8b
 ```

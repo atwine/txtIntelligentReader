@@ -1,21 +1,56 @@
+#!/usr/bin/env python3
 """
-Utilities module for txtIntelligentReader
+Utility modules for txtIntelligentReader.
 
-Contains helper functions and utilities for text processing, 
-file operations, and output formatting.
+Provides logging, output formatting, error handling, and configuration utilities.
 """
 
-from .file_handler import FileHandler
-from .logger import setup_logging
-from .output_formatter import OutputFormatter
-from .error_handler import ErrorHandler, handle_error, safe_execute, ErrorContext
+# Logger utilities
+from .logger import (
+    setup_logging,
+    get_logger,
+    log_function_call
+)
+
+# Output formatting utilities
+from .output_formatter import (
+    OutputFormatter
+)
+
+# Error handling utilities
+from .error_handler import (
+    ErrorHandler,
+    ProcessingError,
+    ErrorContext
+)
+
+# Configuration utilities
+from .config_loader import (
+    ConfigLoader,
+    load_config,
+    get_default_config,
+    validate_config,
+    create_sample_config
+)
 
 __all__ = [
-    'FileHandler',
+    # Logger
     'setup_logging',
+    'get_logger', 
+    'log_function_call',
+    
+    # Output formatter
     'OutputFormatter',
+    
+    # Error handler
     'ErrorHandler',
-    'handle_error',
-    'safe_execute',
-    'ErrorContext'
+    'ProcessingError',
+    'ErrorContext',
+    
+    # Config loader
+    'ConfigLoader',
+    'load_config',
+    'get_default_config',
+    'validate_config',
+    'create_sample_config'
 ]
