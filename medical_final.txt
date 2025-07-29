@@ -1,8 +1,0 @@
-# txtIntelligentReader Output
-# Generated: 2025-07-29T09:12:29.764571
-# Input file: medical_test.txt
-# Processing time: 0.010s
-# Sentences: 0
-# Layers applied: quick, health, ai, thought
-#
-

@@ -4,8 +4,8 @@
   "last_updated": "2025-07-29",
   
   "health_threshold": 0.05,
-  "quality_threshold": 0.4,
-  "completeness_threshold": 0.3,
+  "quality_threshold": 0.2,
+  "completeness_threshold": 0.1,
   
   "layers": ["health"],
   "default_format": "txt",

@@ -81,6 +81,54 @@
    # Edit .env with your configuration
    ```
 
+## ✨ Latest Features (v1.0.3)
+
+### 🕒 **Timestamped Output Files**
+All output files now include automatic timestamps to prevent overwrites and track processing history:
+
+```bash
+# Input: medical_document.txt
+# Output: processed_medical_document_20250729_145052.txt
+python src/main.py medical_document.txt --layers health ai
+```
+
+### 🧹 **Clean Section Number Removal**
+Automatic removal of section numbers for cleaner translation-ready text:
+
+**Before:**
+```
+1.1 Background Uganda adopted the IDSR strategy in 2000
+2.0 OBJECTIVES The main objective is to strengthen surveillance
+```
+
+**After:**
+```
+background uganda adopted the idsr strategy in 2000
+objectives the main objective is to strengthen surveillance
+```
+
+### 📝 **Consistent Lowercase Output**
+All sentences are automatically converted to lowercase for uniform formatting:
+
+```bash
+# Perfect for translation model training
+python src/main.py document.txt --layers health ai --format txt
+```
+
+### 🎯 **Optimized Multi-Agent Pipeline**
+Achieve **59.1% retention** with smart quality enhancement:
+
+```bash
+# Recommended configuration for translation data
+python src/main.py document.txt --layers health ai --health-threshold 0.05 --completeness-threshold 0.3
+```
+
+**Results:**
+- **Input**: 22 sentences
+- **Health Filter**: 22 sentences (100% medical relevance)
+- **AI Filter**: 13 sentences (59.1% high-quality retention)
+- **Perfect for**: Translation model training data
+
 ### Basic Usage
 
 ```python

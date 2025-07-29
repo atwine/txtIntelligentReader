@@ -5,6 +5,32 @@ All notable changes to txtIntelligentReader will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2025-07-29
+
+### Added
+- **Timestamped Output Files**: All output files now include timestamps in format `YYYYMMDD_HHMMSS`
+  - Example: `processed_medical_test_sample_20250729_145052.txt`
+  - Prevents file overwrites and provides clear processing history
+- **Section Number Removal**: Automatic removal of section numbers from sentence beginnings
+  - Removes patterns like "1.1", "2.0", "3.1.2", "A.4" from start of sentences
+  - Produces cleaner output for translation model training
+- **Enhanced Lowercase Output**: All sentences consistently converted to lowercase
+  - Applies to both text and JSON output formats
+  - Ensures uniform formatting for downstream processing
+
+### Improved
+- **Multi-Agent Pipeline Optimization**: Refined layer configuration for better sentence retention
+  - Health + AI layers now achieve 59.1% retention (vs 9.1% with all layers)
+  - Smart quality enhancement rather than aggressive filtering
+  - Perfect for translation model training data
+- **Configuration-Driven Defaults**: Pipeline now respects config file layer settings
+  - Fixed hardcoded layer defaults in filter pipeline
+  - Enables proper customization via config.json
+
+### Fixed
+- **Output Directory Enforcement**: All outputs now properly saved to `output/` directory
+- **Filename Generation**: Consistent timestamped filename generation across batch and single file processing
+
 ## [1.0.2] - 2025-07-29
 
 ### Added

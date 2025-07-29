@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Union, Optional
 import platform
 import sys
+import re
 
 from .logger import LoggerMixin
 
@@ -26,6 +27,31 @@ class OutputFormatter(LoggerMixin):
     """
     
     VERSION = "1.0.0"
+    
+    def _clean_section_numbers(self, sentence: str) -> str:
+        """
+        Remove section numbers from the beginning of sentences.
+        
+        Args:
+            sentence: Input sentence
+            
+        Returns:
+            Cleaned sentence without section numbers
+        """
+        # Remove patterns like "1.1", "2.0", "3.1.2", "A.4", etc. from the beginning
+        patterns = [
+            r'^\s*\d+\.\d+\s*',  # "1.1 ", "2.0 "
+            r'^\s*\d+\.\d+\.\d+\s*',  # "1.2.3 "
+            r'^\s*[A-Z]\.\d+\s*',  # "A.4 "
+            r'^\s*\d+\.\d+\.\d+\.\d+\s*',  # "1.2.3.4 "
+            r'^\s*\d+\.\s*',  # "1. ", "2. "
+        ]
+        
+        cleaned = sentence
+        for pattern in patterns:
+            cleaned = re.sub(pattern, '', cleaned, flags=re.IGNORECASE)
+        
+        return cleaned.strip()
     
     def __init__(self):
         """Initialize the output formatter."""
@@ -50,8 +76,9 @@ class OutputFormatter(LoggerMixin):
             with open(output_path, 'w', encoding='utf-8') as f:
                 # Write sentences in lowercase without metadata headers
                 for sentence in sentences:
-                    # Convert to lowercase and clean up
-                    cleaned_sentence = sentence.strip().lower()
+                    # Remove section numbers, convert to lowercase and clean up
+                    cleaned_sentence = self._clean_section_numbers(sentence)
+                    cleaned_sentence = cleaned_sentence.strip().lower()
                     if cleaned_sentence:  # Only write non-empty sentences
                         f.write(cleaned_sentence + '\n')
             
@@ -96,7 +123,7 @@ class OutputFormatter(LoggerMixin):
                     "configuration": metadata.get('configuration', {})
                 },
                 "results": {
-                    "filtered_sentences": sentences,
+                    "filtered_sentences": [self._clean_section_numbers(s).strip().lower() for s in sentences],
                     "output_sentence_count": len(sentences),
                     "retention_rate": metadata.get('statistics', {}).get('overall_retention_rate', 0)
                 }

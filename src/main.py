@@ -7,11 +7,12 @@ high-quality, translation-ready sentences from health domain text files.
 """
 
 import argparse
-import sys
 import os
+import sys
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Optional, Dict, Any
 import time
+from datetime import datetime
 import json
 
 # Add src to path for imports
@@ -19,6 +20,29 @@ sys.path.append(str(Path(__file__).parent))
 
 from pipeline import TextProcessor
 from utils import setup_logging, ErrorHandler, OutputFormatter, ConfigLoader, load_config, create_llm_client
+
+
+def generate_timestamped_filename(base_filename: str, extension: str = None) -> str:
+    """
+    Generate a timestamped filename.
+    
+    Args:
+        base_filename: Base filename without extension
+        extension: File extension (optional)
+        
+    Returns:
+        Timestamped filename
+    """
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    if extension:
+        return f"{base_filename}_{timestamp}.{extension}"
+    else:
+        # Extract extension from base_filename if present
+        path = Path(base_filename)
+        if path.suffix:
+            return f"{path.stem}_{timestamp}{path.suffix}"
+        else:
+            return f"{base_filename}_{timestamp}"
 
 
 class TxtIntelligentReader:
@@ -236,11 +260,14 @@ def main():
                 
                 if args.output:
                     if os.path.isdir(args.output):
-                        output_file = os.path.join(args.output, f"processed_{os.path.basename(input_file)}")
+                        base_name = f"processed_{os.path.basename(input_file)}"
+                        output_file = os.path.join(args.output, generate_timestamped_filename(base_name))
                     else:
-                        output_file = output_dir / f"{Path(args.output).stem}_{i}.txt"
+                        base_name = f"{Path(args.output).stem}_{i}.txt"
+                        output_file = output_dir / generate_timestamped_filename(base_name)
                 else:
-                    output_file = output_dir / f"processed_{os.path.basename(input_file)}"
+                    base_name = f"processed_{os.path.basename(input_file)}"
+                    output_file = output_dir / generate_timestamped_filename(base_name)
                 
                 result = reader.process_file(
                     input_file=input_file,
@@ -261,11 +288,13 @@ def main():
             
             if args.output:
                 if os.path.isdir(args.output):
-                    output_file = args.output
+                    base_name = f"processed_{os.path.basename(input_file)}"
+                    output_file = Path(args.output) / generate_timestamped_filename(base_name)
                 else:
-                    output_file = output_dir / Path(args.output).name
+                    output_file = output_dir / generate_timestamped_filename(Path(args.output).name)
             else:
-                output_file = output_dir / f"processed_{os.path.basename(input_file)}"
+                base_name = f"processed_{os.path.basename(input_file)}"
+                output_file = output_dir / generate_timestamped_filename(base_name)
             
             result = reader.process_file(
                 input_file=input_file,

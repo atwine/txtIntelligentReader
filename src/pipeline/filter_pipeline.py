@@ -105,7 +105,7 @@ class FilterPipeline(LoggerMixin):
             Dictionary with processing results and statistics
         """
         start_time = time.time()
-        layers = layers or ['quick', 'health', 'ai', 'thought']
+        layers = layers or self.config.get('layers', ['health'])
         
         self.log_info(f"Starting pipeline processing of {len(sentences)} sentences")
         self.log_info(f"Applying layers: {', '.join(layers)}")
