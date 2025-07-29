@@ -5,6 +5,34 @@ All notable changes to txtIntelligentReader will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2025-07-29
+
+### Added
+- **Ollama LLM Integration**: Full integration with Ollama for AI-powered sentence analysis
+  - LLMClientManager for robust client initialization and connection handling
+  - Automatic model selection with fallback logic (llama3.1:8b → llama3:8b → llama2:7b → deepseek-r1:1.5b)
+  - `--llm-client ollama` CLI flag to enable AI analysis
+  - Timeout handling and connection testing for reliable operation
+
+### Enhanced
+- **QuickFilter Improvements**: Enhanced noise pattern detection for medical documents
+  - Section number removal (3.1, A.4, 1.2.3 patterns)
+  - Header and reference filtering
+  - Page number and formatting artifact removal
+- **Output Formatting**: Cleaner, more usable output
+  - Removed metadata headers from text output
+  - All sentences converted to lowercase
+  - Enforced output/ directory for all results
+
+### Added
+- **Testing Infrastructure**: medical_test_sample.txt for rapid development and testing
+- **Error Handling**: Improved LLM connection error handling and fallback mechanisms
+
+### Technical
+- New LLM client utilities in `src/utils/llm_client.py`
+- Updated main.py with LLM client initialization
+- Enhanced utils module exports
+
 ## [1.0.1] - 2025-07-29
 
 ### Changed
