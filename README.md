@@ -112,6 +112,45 @@ print(f"Processed {results['processed_segments']} segments")
 print(f"Quality Score: {results['quality_score']:.2f}")
 ```
 
+## ⚙️ Configuration
+
+### Optimized Thresholds (v1.0.0)
+Based on testing with Uganda IDSR Technical Guidelines:
+
+```bash
+# Use optimized configuration for balanced quality and quantity
+txtir input.txt --config config/config.json --stats
+
+# Manual threshold adjustment
+txtir input.txt --health-threshold 0.15 --quality-threshold 0.4 --completeness-threshold 0.3
+```
+
+**Optimized Settings:**
+- **Health Context**: 0.15 (15% medical relevance required)
+- **AI Analysis**: 0.4 (40% completeness required)  
+- **Final Quality**: 0.3 (30% overall quality required)
+- **Retention Rate**: ~2% (balanced quality and quantity)
+
+**Default Settings (Conservative):**
+- **Health Context**: 0.3 (30% medical relevance required)
+- **AI Analysis**: 0.6 (60% completeness required)  
+- **Final Quality**: 0.7 (70% overall quality required)
+- **Retention Rate**: ~0.2% (highest quality, lowest quantity)
+
+### Configuration File
+
+Create `config/config.json`:
+```json
+{
+  "health_threshold": 0.15,
+  "quality_threshold": 0.4,
+  "completeness_threshold": 0.3,
+  "layers": ["quick", "health", "ai", "thought"],
+  "default_format": "txt",
+  "include_statistics": true
+}
+```
+
 ## 📁 Project Structure
 
 ```

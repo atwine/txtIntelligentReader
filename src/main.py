@@ -18,7 +18,7 @@ import json
 sys.path.append(str(Path(__file__).parent))
 
 from pipeline import TextProcessor
-from utils import setup_logging, ErrorHandler, OutputFormatter, ConfigLoader
+from utils import setup_logging, ErrorHandler, OutputFormatter, ConfigLoader, load_config
 
 
 class TxtIntelligentReader:
@@ -178,13 +178,23 @@ def main():
         # Load configuration
         config = load_config(args.config) if args.config else {}
         
-        # Override config with command line arguments
-        config.update({
-            'health_threshold': args.health_threshold,
-            'completeness_threshold': args.completeness_threshold,
-            'quality_threshold': args.quality_threshold,
-            'use_spacy': args.use_spacy
-        })
+        # Override config with command line arguments only if explicitly provided
+        # Check if values differ from defaults to determine if they were explicitly set
+        parser_defaults = {
+            'health_threshold': 0.3,
+            'completeness_threshold': 0.6,
+            'quality_threshold': 0.7
+        }
+        
+        # Only override if the value was explicitly provided (differs from default)
+        if args.health_threshold != parser_defaults['health_threshold']:
+            config['health_threshold'] = args.health_threshold
+        if args.completeness_threshold != parser_defaults['completeness_threshold']:
+            config['completeness_threshold'] = args.completeness_threshold
+        if args.quality_threshold != parser_defaults['quality_threshold']:
+            config['quality_threshold'] = args.quality_threshold
+            
+        config['use_spacy'] = args.use_spacy
         
         # Initialize the reader
         reader = TxtIntelligentReader(config)

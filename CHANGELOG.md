@@ -5,6 +5,26 @@ All notable changes to txtIntelligentReader will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2025-07-29
+
+### Changed
+- **Filter Optimization**: Updated default thresholds based on Uganda IDSR Technical Guidelines testing
+  - Health threshold: 0.3 → 0.15 (improved medical content detection)
+  - Quality threshold: 0.7 → 0.4 (balanced quality and quantity)
+  - Completeness threshold: 0.6 → 0.3 (better sentence retention)
+- **Configuration System**: Fixed config file loading to properly respect file-based settings
+- **Retention Rate**: Improved from 0.2% to ~2% while maintaining quality standards
+
+### Fixed
+- Configuration file values now properly override default settings
+- Command-line arguments only override config when explicitly provided
+- Import warnings resolved for production deployment
+
+### Performance
+- **Processing Speed**: Maintained 150,000+ sentences per minute
+- **Quality Balance**: Achieved optimal balance between quality and quantity
+- **Medical Accuracy**: Enhanced medical term recognition and context analysis
+
 ## [1.0.0] - 2025-01-29
 
 ### Added

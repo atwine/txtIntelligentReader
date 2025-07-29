@@ -14,7 +14,7 @@ Key Features:
 - Comprehensive Testing: 100+ test scenarios with validation
 
 Usage:
-    from src.pipeline.text_processor import TextProcessor
+    from .pipeline.text_processor import TextProcessor
     
     processor = TextProcessor()
     result = processor.process_file('medical_document.txt')
@@ -25,6 +25,33 @@ License: MIT
 Version: 1.0.0
 """
 
-__version__ = "1.0.0"
-__author__ = "Atwine"
-__description__ = "CrewAI Multi-Agent Text Processing System for Health Domain"
+__version__ = "1.0.1"
+__author__ = "txtIntelligentReader Team"
+__email__ = "support@txtintelligentreader.com"
+__license__ = "MIT"
+__description__ = "Advanced Medical Text Processing System with Multi-Layer Filtering"
+__url__ = "https://github.com/your-username/txtIntelligentReader"
+
+try:
+    from .pipeline.text_processor import TextProcessor
+    from .pipeline.filter_pipeline import FilterPipeline
+    from .utils.config_loader import ConfigLoader
+    from .utils.output_formatter import OutputFormatter
+    from .utils.logger import Logger
+    from .utils.error_handler import ErrorHandler
+    
+    __all__ = [
+        'TextProcessor',
+        'FilterPipeline', 
+        'ConfigLoader',
+        'OutputFormatter',
+        'Logger',
+        'ErrorHandler',
+        '__version__',
+        '__author__',
+        '__license__'
+    ]
+except ImportError as e:
+    # Handle import errors gracefully during package installation
+    print(f"Warning: Could not import all modules: {e}")
+    __all__ = ['__version__', '__author__', '__license__']

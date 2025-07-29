@@ -1,0 +1,21 @@
+{
+  "version": "1.0.1",
+  "description": "Main configuration for txtIntelligentReader - Optimized for medical documents",
+  "last_updated": "2025-07-29",
+  
+  "health_threshold": 0.15,
+  "quality_threshold": 0.4,
+  "completeness_threshold": 0.3,
+  
+  "layers": ["quick", "health", "ai", "thought"],
+  "default_format": "txt",
+  "include_statistics": true,
+  "include_metadata": true,
+  
+  "log_level": "INFO",
+  "file_logging": true,
+  "console_logging": true,
+  
+  "batch_size": 1000,
+  "memory_limit": "512MB"
+}

@@ -1,0 +1,88 @@
+{
+  "version": "1.0.0",
+  "description": "Optimized configuration based on Uganda IDSR Technical Guidelines testing",
+  "optimization_date": "2025-07-29",
+  "test_document": "Uganda 3rd IDSR Tech Guideline_PrintVersion_10Sep2021.txt",
+  "test_results": {
+    "input_sentences": 6646,
+    "default_output": 12,
+    "default_retention_rate": "0.2%",
+    "optimized_output": 135,
+    "optimized_retention_rate": "2.0%",
+    "performance": "Balanced quality and quantity for medical documents"
+  },
+  
+  "filtering": {
+    "layers": ["quick", "health", "ai", "thought"],
+    "thresholds": {
+      "health_threshold": 0.15,
+      "quality_threshold": 0.4,
+      "completeness_threshold": 0.3
+    },
+    "quick_filter": {
+      "min_length": 10,
+      "max_length": 500,
+      "remove_headers": true,
+      "remove_page_numbers": true,
+      "remove_table_fragments": true
+    },
+    "health_filter": {
+      "medical_terms_weight": 0.4,
+      "context_analysis": true,
+      "domain_keywords": [
+        "patient", "disease", "symptoms", "treatment", "diagnosis",
+        "clinical", "medical", "health", "surveillance", "outbreak",
+        "infection", "epidemic", "pandemic", "vaccine", "therapy"
+      ]
+    },
+    "ai_filter": {
+      "grammar_check": true,
+      "completeness_check": true,
+      "coherence_threshold": 0.4
+    },
+    "thought_filter": {
+      "subject_predicate_check": true,
+      "translation_readiness": true,
+      "final_quality_threshold": 0.3
+    }
+  },
+  
+  "output": {
+    "default_format": "txt",
+    "include_statistics": true,
+    "include_metadata": true,
+    "line_numbers": false
+  },
+  
+  "logging": {
+    "level": "INFO",
+    "file_logging": true,
+    "console_logging": true,
+    "debug_mode": false
+  },
+  
+  "performance": {
+    "batch_size": 1000,
+    "memory_limit": "512MB",
+    "processing_timeout": 300
+  },
+  
+  "medical_specialization": {
+    "focus_domains": [
+      "infectious_diseases",
+      "surveillance",
+      "public_health",
+      "clinical_guidelines",
+      "epidemiology"
+    ],
+    "enhanced_medical_terms": true,
+    "context_aware_filtering": true
+  },
+  
+  "quality_assurance": {
+    "minimum_retention_rate": 0.5,
+    "maximum_retention_rate": 10.0,
+    "quality_score_threshold": 0.3,
+    "translation_readiness_check": true
+  }
+}
